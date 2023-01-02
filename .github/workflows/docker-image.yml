@@ -47,5 +47,14 @@ jobs:
         tags: |
           robonet/dotnet-scratch:latest
           robonet/dotnet-scratch:6.0.12
-
+    - name: Minimal Build and push
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        file: Dockerfile.minimal
+        platforms: linux/amd64,linux/arm64
+        push: true
+        tags: |
+          robonet/dotnet-scratch:minimal-latest
+          robonet/dotnet-scratch:minimal-6.0.12
 
