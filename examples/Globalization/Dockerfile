@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS prepare
+FROM mcr.microsoft.com/dotnet/sdk:7.0.1 AS prepare
 WORKDIR /
 
 #restore

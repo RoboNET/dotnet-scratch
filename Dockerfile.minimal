@@ -1,5 +1,5 @@
 # Use dotnet runtime deps to gather all dependencies
-FROM mcr.microsoft.com/dotnet/runtime-deps:6.0-alpine as base
+FROM mcr.microsoft.com/dotnet/runtime-deps:7.0.1-alpine3.17 as base
 
 # Create appuser.
 ENV USER=dotnet
@@ -29,7 +29,7 @@ FROM scratch as runtime-minimal
 ENV USER=dotnet
 ENV UID=245000 
 ARG TARGETARCH
-ARG DOTNET_VERSION=6.0.12
+ARG DOTNET_VERSION=7.0.1
 
 COPY --from=base /lib/ /lib
 COPY --from=base /tmp/ /tmp
