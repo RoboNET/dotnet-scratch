@@ -17,7 +17,7 @@ FROM prepare AS build
 RUN dotnet build --no-restore -c Release
 
 WORKDIR /Example
-RUN dotnet publish -c Release -r linux-musl-arm64 -p:PublishReadyToRun=true -o out
+RUN dotnet publish -c Release -r linux-musl-arm64 -p:PublishReadyToRun=true -p:PublishTrimmed=true -p:PublishSingleFile=true -o out
 
 FROM robonet/dotnet-scratch:minimal-latest AS runtime
 WORKDIR /app

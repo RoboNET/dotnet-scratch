@@ -36,6 +36,7 @@ jobs:
         push: true
         tags: |
           robonet/dotnet-scratch:full-latest
+          robonet/dotnet-scratch:full-6.0
           robonet/dotnet-scratch:full-6.0.12
     - name: Build and push
       uses: docker/build-push-action@v3
@@ -46,6 +47,7 @@ jobs:
         push: true
         tags: |
           robonet/dotnet-scratch:latest
+          robonet/dotnet-scratch:6.0
           robonet/dotnet-scratch:6.0.12
     - name: Minimal Build and push
       uses: docker/build-push-action@v3
@@ -56,5 +58,6 @@ jobs:
         push: true
         tags: |
           robonet/dotnet-scratch:minimal-latest
+          robonet/dotnet-scratch:minimal-6.0
           robonet/dotnet-scratch:minimal-6.0.12
 
