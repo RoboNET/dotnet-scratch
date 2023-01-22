@@ -1,5 +1,5 @@
 # Use dotnet runtime deps to gather all dependencies
-FROM mcr.microsoft.com/dotnet/runtime-deps:7.0.1-alpine3.17 as base
+FROM mcr.microsoft.com/dotnet/aspnet:7.0.2-alpine3.17 as base-builder
 
 # Create appuser.
 ENV USER=dotnet
@@ -17,6 +17,8 @@ RUN adduser \
 RUN mkdir -p /tmp
 RUN chown ${USER} /tmp
 
+FROM base-builder as builder
+
 # Cleanup /lib
 RUN find /lib -type d -empty -delete && \
     rm -r /lib/apk && \
@@ -24,27 +26,39 @@ RUN find /lib -type d -empty -delete && \
 
 RUN find / -xdev -perm -4000 -type f -exec chmod a-s {} \;
 
-# Create runtime image
-FROM scratch as runtime-full
-ENV USER=dotnet
-ENV UID=245000 
-ARG TARGETARCH
-ARG DOTNET_VERSION=7.0.1
 
-COPY --from=base /lib/ /lib
-COPY --from=base /tmp/ /tmp
-COPY --from=base /usr/lib /usr/lib
-COPY --from=base /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=base /etc/passwd /etc/passwd
-COPY --from=base /etc/group /etc/group
+FROM base-builder as globalization-builder
+RUN apk add --no-cache \
+    icu-libs \
+    icu-data-full \
+    tzdata
+
+# Cleanup /lib
+RUN find /lib -type d -empty -delete && \
+    rm -r /lib/apk && \
+    rm -r /lib/sysctl.d
+
+RUN find / -xdev -perm -4000 -type f -exec chmod a-s {} \;
+
+
+# Create runtime image
+FROM scratch as runtime-deps
+ENV USER=dotnet
+ENV UID=245000
+ENV DOTNET_ROOT=/.dotnet
+
+ARG TARGETARCH
+
+COPY --from=builder /lib/ /lib
+COPY --from=builder /tmp/ /tmp
+COPY --from=builder /usr/lib /usr/lib
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /etc/group /etc/group
 
 # chmod hack: extract tmp.tar file with correct flags
 # see https://github.com/GoogleContainerTools/distroless/blob/main/base/tmp.tar
 ADD tmp.tar .
-
-ENV DOTNET_ROOT=/.dotnet
-
-ADD aspnetcore-runtime-${DOTNET_VERSION}-linux-musl-${TARGETARCH}.tar.gz $DOTNET_ROOT
 
 ENV ASPNETCORE_URLS=http://+:80 \
     DOTNET_RUNNING_IN_CONTAINER=true \
@@ -53,3 +67,41 @@ ENV ASPNETCORE_URLS=http://+:80 \
     PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools
 
 USER $UID:$UID
+
+# Create runtime image
+FROM runtime-deps as aspnet
+COPY --from=builder /usr/share/dotnet $DOTNET_ROOT
+
+
+# Create runtime image
+FROM scratch as runtime-deps-globalization
+ENV USER=dotnet
+ENV UID=245000
+ENV DOTNET_ROOT=/.dotnet
+
+ARG TARGETARCH
+
+COPY --from=globalization-builder /lib/ /lib
+COPY --from=globalization-builder /tmp/ /tmp
+COPY --from=globalization-builder /usr/lib /usr/lib
+COPY --from=globalization-builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=globalization-builder /usr/share/icu /usr/share/icu
+COPY --from=globalization-builder /usr/share/zoneinfo /usr/share/zoneinfo
+COPY --from=globalization-builder /etc/passwd /etc/passwd
+COPY --from=globalization-builder /etc/group /etc/group
+
+# chmod hack: extract tmp.tar file with correct flags
+# see https://github.com/GoogleContainerTools/distroless/blob/main/base/tmp.tar
+ADD tmp.tar .
+
+ENV ASPNETCORE_URLS=http://+:80 \
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
+    TMPDIR=/tmp \
+    PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools
+
+USER $UID:$UID
+
+# Create runtime image
+FROM runtime-deps-globalization as aspnet-globalization
+COPY --from=globalization-builder /usr/share/dotnet $DOTNET_ROOT

@@ -27,37 +27,51 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-    - name: Full Build and push
-      uses: docker/build-push-action@v3
-      with:
-        context: .
-        file: Dockerfile.full
-        platforms: linux/amd64,linux/arm64
-        push: true
-        tags: |
-          robonet/dotnet-scratch:full-latest
-          robonet/dotnet-scratch:full-7.0
-          robonet/dotnet-scratch:full-7.0.1
-    - name: Build and push
+    - name: Build and push runtime-deps
       uses: docker/build-push-action@v3
       with:
         context: .
         file: Dockerfile
         platforms: linux/amd64,linux/arm64
         push: true
+        target: runtime-deps
         tags: |
-          robonet/dotnet-scratch:latest
-          robonet/dotnet-scratch:7.0
-          robonet/dotnet-scratch:7.0.1
-    - name: Minimal Build and push
+          robonet/dotnet-scratch:runtime-deps-latest
+          robonet/dotnet-scratch:runtime-deps-7.0
+          robonet/dotnet-scratch:runtime-deps-7.0.2
+    - name: Build and push runtime-deps-globalization
       uses: docker/build-push-action@v3
       with:
         context: .
-        file: Dockerfile.minimal
+        file: Dockerfile
         platforms: linux/amd64,linux/arm64
         push: true
+        target: runtime-deps-globalization
         tags: |
-          robonet/dotnet-scratch:minimal-latest
-          robonet/dotnet-scratch:minimal-7.0
-          robonet/dotnet-scratch:minimal-7.0.1
-
+          robonet/dotnet-scratch:runtime-deps-globalization-latest
+          robonet/dotnet-scratch:runtime-deps-globalization-7.0
+          robonet/dotnet-scratch:runtime-deps-globalization-7.0.2
+    - name: Build and push aspnet
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        file: Dockerfile
+        platforms: linux/amd64,linux/arm64
+        push: true
+        target: aspnet
+        tags: |
+          robonet/dotnet-scratch:aspnet-latest
+          robonet/dotnet-scratch:aspnet-7.0
+          robonet/dotnet-scratch:aspnet-7.0.2
+    - name: Build and push aspnet-globalization
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        file: Dockerfile
+        platforms: linux/amd64,linux/arm64
+        push: true
+        target: aspnet-globalization
+        tags: |
+          robonet/dotnet-scratch:aspnet-globalization-latest
+          robonet/dotnet-scratch:aspnet-globalization-7.0
+          robonet/dotnet-scratch:aspnet-globalization-7.0.2
