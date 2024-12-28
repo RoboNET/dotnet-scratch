@@ -1,5 +1,6 @@
+ARG VERSION
 # Use dotnet runtime deps to gather all dependencies
-FROM mcr.microsoft.com/dotnet/aspnet:7.0.2-alpine3.17 as base-builder
+FROM mcr.microsoft.com/dotnet/aspnet:${VERSION} AS base-builder
 
 # Create appuser.
 ENV USER=dotnet
@@ -17,7 +18,7 @@ RUN adduser \
 RUN mkdir -p /tmp
 RUN chown ${USER} /tmp
 
-FROM base-builder as builder
+FROM base-builder AS builder
 
 # Cleanup /lib
 RUN find /lib -type d -empty -delete && \
@@ -27,7 +28,7 @@ RUN find /lib -type d -empty -delete && \
 RUN find / -xdev -perm -4000 -type f -exec chmod a-s {} \;
 
 
-FROM base-builder as globalization-builder
+FROM base-builder AS globalization-builder
 RUN apk add --no-cache \
     icu-libs \
     icu-data-full \
@@ -42,7 +43,7 @@ RUN find / -xdev -perm -4000 -type f -exec chmod a-s {} \;
 
 
 # Create runtime image
-FROM scratch as runtime-deps
+FROM scratch AS runtime-deps
 ENV USER=dotnet
 ENV UID=245000
 ENV DOTNET_ROOT=/.dotnet
@@ -69,12 +70,12 @@ ENV ASPNETCORE_URLS=http://+:80 \
 USER $UID:$UID
 
 # Create runtime image
-FROM runtime-deps as aspnet
+FROM runtime-deps AS aspnet
 COPY --from=builder /usr/share/dotnet $DOTNET_ROOT
 
 
 # Create runtime image
-FROM scratch as runtime-deps-globalization
+FROM scratch AS runtime-deps-globalization
 ENV USER=dotnet
 ENV UID=245000
 ENV DOTNET_ROOT=/.dotnet
@@ -103,5 +104,5 @@ ENV ASPNETCORE_URLS=http://+:80 \
 USER $UID:$UID
 
 # Create runtime image
-FROM runtime-deps-globalization as aspnet-globalization
+FROM runtime-deps-globalization AS aspnet-globalization
 COPY --from=globalization-builder /usr/share/dotnet $DOTNET_ROOT
