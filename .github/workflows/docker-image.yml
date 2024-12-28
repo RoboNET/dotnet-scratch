@@ -55,6 +55,7 @@ jobs:
         platforms: linux/amd64,linux/arm64
         push: true
         target: runtime-deps-globalization
+        build-args: VERSION=${{github.event.inputs.base-image-tag}}
         tags: |
           robonet/dotnet-scratch:runtime-deps-globalization-latest
           robonet/dotnet-scratch:runtime-deps-globalization-${{github.event.inputs.publish-major-version}}
@@ -67,6 +68,7 @@ jobs:
         platforms: linux/amd64,linux/arm64
         push: true
         target: aspnet
+        build-args: VERSION=${{github.event.inputs.base-image-tag}}
         tags: |
           robonet/dotnet-scratch:aspnet-latest
           robonet/dotnet-scratch:aspnet-${{github.event.inputs.publish-major-version}}
@@ -79,6 +81,7 @@ jobs:
         platforms: linux/amd64,linux/arm64
         push: true
         target: aspnet-globalization
+        build-args: VERSION=${{github.event.inputs.base-image-tag}}
         tags: |
           robonet/dotnet-scratch:aspnet-globalization-latest
           robonet/dotnet-scratch:aspnet-globalization-${{github.event.inputs.publish-major-version}}
