@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0.101 AS prepare
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS prepare
 WORKDIR /
 
 #restore
@@ -19,7 +19,7 @@ RUN dotnet build --no-restore -c Release
 WORKDIR /Example
 RUN dotnet publish -c Release -r linux-musl-arm64 -p:PublishReadyToRun=true -p:PublishTrimmed=true -p:PublishSingleFile=true -o out
 
-FROM robonet/dotnet-scratch:minimal-latest AS runtime
+FROM robonet/dotnet-scratch:runtime-deps-9 AS runtime
 WORKDIR /app
 COPY --from=build --chown=$USER:$USER /Example/out ./
 ENTRYPOINT ["./Example"]

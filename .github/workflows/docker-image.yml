@@ -44,7 +44,6 @@ jobs:
         target: runtime-deps
         build-args: VERSION=${{github.event.inputs.base-image-tag}}
         tags: |
-          robonet/dotnet-scratch:runtime-deps-latest
           robonet/dotnet-scratch:runtime-deps-${{github.event.inputs.publish-major-version}}
           robonet/dotnet-scratch:runtime-deps-${{github.event.inputs.publish-version}}
     - name: Build and push runtime-deps-globalization
@@ -57,7 +56,6 @@ jobs:
         target: runtime-deps-globalization
         build-args: VERSION=${{github.event.inputs.base-image-tag}}
         tags: |
-          robonet/dotnet-scratch:runtime-deps-globalization-latest
           robonet/dotnet-scratch:runtime-deps-globalization-${{github.event.inputs.publish-major-version}}
           robonet/dotnet-scratch:runtime-deps-globalization-${{github.event.inputs.publish-version}}
     - name: Build and push aspnet
@@ -70,7 +68,6 @@ jobs:
         target: aspnet
         build-args: VERSION=${{github.event.inputs.base-image-tag}}
         tags: |
-          robonet/dotnet-scratch:aspnet-latest
           robonet/dotnet-scratch:aspnet-${{github.event.inputs.publish-major-version}}
           robonet/dotnet-scratch:aspnet-${{github.event.inputs.publish-version}}
     - name: Build and push aspnet-globalization
@@ -83,6 +80,5 @@ jobs:
         target: aspnet-globalization
         build-args: VERSION=${{github.event.inputs.base-image-tag}}
         tags: |
-          robonet/dotnet-scratch:aspnet-globalization-latest
           robonet/dotnet-scratch:aspnet-globalization-${{github.event.inputs.publish-major-version}}
           robonet/dotnet-scratch:aspnet-globalization-${{github.event.inputs.publish-version}}

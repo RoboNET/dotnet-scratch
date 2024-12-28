@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0.101 AS prepare
+FROM mcr.microsoft.com/dotnet/sdk:9.0.0 AS prepare
 WORKDIR /
 
 #restore
@@ -20,7 +20,7 @@ RUN dotnet build --no-restore -c Release
 WORKDIR /Example
 RUN dotnet publish --no-restore -c Release -o out
 
-FROM robonet/dotnet-scratch:full-latest AS runtime
+FROM robonet/dotnet-scratch:aspnet-9 AS runtime
 WORKDIR /app
 COPY --from=build --chown=$USER:$USER /Example/out ./
 ENTRYPOINT ["dotnet", "Example.dll"]
