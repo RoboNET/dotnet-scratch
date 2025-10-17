@@ -4,7 +4,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:${VERSION} AS base-builder
 
 # Create appuser.
 ENV USER=dotnet
-ENV UID=245000 
+ENV UID=45432 
 # See https://stackoverflow.com/a/55757473/12429735RUN 
 RUN adduser \    
     --disabled-password \    
@@ -45,7 +45,7 @@ RUN find / -xdev -perm -4000 -type f -exec chmod a-s {} \;
 # Create runtime image
 FROM scratch AS runtime-deps
 ENV USER=dotnet
-ENV UID=245000
+ENV UID=45432
 ENV DOTNET_ROOT=/.dotnet
 
 ARG TARGETARCH
@@ -77,7 +77,7 @@ COPY --from=builder /usr/share/dotnet $DOTNET_ROOT
 # Create runtime image
 FROM scratch AS runtime-deps-globalization
 ENV USER=dotnet
-ENV UID=245000
+ENV UID=45432
 ENV DOTNET_ROOT=/.dotnet
 
 ARG TARGETARCH
